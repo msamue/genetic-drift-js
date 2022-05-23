@@ -1,4 +1,8 @@
-//draw_line_chart function used in "Nature, in Code" by Marcel Salathé, modified for this sim
+/**
+* draw_line_chart function used in "Nature, in Code" by Marcel Salathé, modified for this sim
+* Original code can be found below:
+* http://www.natureincode.com/code/various/draw_line_chart.html
+**/
 function draw_line_chart(data, x_label, y_label, legend_values, x_max, y_max_flex) {
     var margin = { top: 20, right: 20, bottom: 50, left: 50 },
         width = 700 - margin.left - margin.right,
