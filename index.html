@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> PlaceHolder </title>
-    <link href="" rel="">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
     <div class="wrap">
-        <h1> Placeholder Header</h1>
-        <div class="grida">
+        <div class="gridA">
             <div id="params">
-                <label id="freqA"> Initial frequency of allele A: <input type="range" min="0" max="1" step="0.01" value="0.5" oninput="this.nextElementSibling.value = this.value"> <output></output></label><br>
-                <label id="popSize"> Population Size : <input type="range" min="1" max="1000" value="500" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
-                <label id="numGen"> Number of generations : <input type="range" min="1" max="1000" value="500" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+                <!--Main params, gets pushed to data vars-->
+                <!--maybe find a way to use both number and range input for each param?-->
+                <label id="freqA"> Initial frequency of allele A: <input type="number" min="0" max="1" step="0.01" value="0.5" oninput="this.nextElementSibling.value = this.value"> <output></output></label><br>
+                <label id="popSize"> Population Size : <input type="number" min="1" max="1000" value="500" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+                <label id="numGen"> Number of generations : <input type="number" min="1" max="1000" value="500" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
                 <label id="numSim"> Number of simulations : <input type="range" min="1" max="5" value="1" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
                 <button>Go!</button>
             </div>
         </div>
         <div class="gridb">
+            <!--Graph-->
             <div class="graphspace"></div>
         </div>
     </div>
 </body>
 
-<!--Included Scripts-->
+<!--Main Scripts-->
 <script>
     //draw_line_chart function used in "Nature, in Code" by Marcel Salathé, modified for this sim
     function draw_line_chart(data, x_label, y_label, legend_values, x_max, y_max_flex) {
@@ -176,6 +176,7 @@
 
     draw_line_chart([0.5], "Time (generations)", "Allele Frequency", [""]);
 
+    //changing and storing values, running simulation on button click
     $("#popSize input").on("change", function () {
         $("#popSize span").html($("#popSize input")[0].value);
     });
@@ -194,8 +195,16 @@
     numSim = $("#numSim input")[0].value;
     data = [];
 
+    //can possibly turn block below into function?
+
+    //used to loop simulations, kept max to 5 for simplicity
     for (i = 0; i < numSim; i++) {
         data.push([]);
+        /**
+        * using example from "Nature, in Code" and the formula:
+        * Freq (p) = p / (2 * Ne)
+        * NOTE: when numGen = 1, this loop breaks
+        **/
         for (j = 0; j < numGen; j++) {
             var p = 0,
             draws = 2 * popSize;
@@ -208,7 +217,7 @@
             data[i].push(freqA);
         }
     }
-        draw_line_chart(data, "Time (generations)", "Allele Frequency", [""]);
+        draw_line_chart(data, "Generations", "Allele Frequency", [""]);
     })
 </script>
 </html>
