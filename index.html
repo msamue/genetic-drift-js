@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
@@ -9,12 +9,23 @@
     <div class="wrap">
         <div class="gridA">
             <div id="params">
-                <!--Main params, gets pushed to data vars-->
+                <!--Main params, gets pushed to data-->
                 <!--maybe find a way to use both number and range input for each param?-->
                 <label id="freqA"> Initial frequency of allele A: <input type="number" min="0" max="1" step="0.01" value="0.5" oninput="this.nextElementSibling.value = this.value"> <output></output></label><br>
-                <label id="popSize"> Population Size : <input type="number" min="1" max="1000" value="500" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+
+                <label id="Ne"> Population Size : <input type="number" min="1" max="1000" value="500" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+
                 <label id="numGen"> Number of generations : <input type="number" min="1" max="1000" value="500" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+                
+                !!! Fitnesses : <br>
+                <label id="fitHD"> AA <input type="number" min="0" max="1" value="1" step="0.01" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+
+                <label id="fitHT"> Aa <input type="number" min="0" max="1" value="1" step="0.01" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+
+                <label id="fitHR"> aa <input type="number" min="0" max="1" value="1" step="0.01" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+
                 <label id="numSim"> Number of simulations : <input type="range" min="1" max="5" value="1" oninput="this.nextElementSibling.value = this.value"><output></output></label><br>
+                
                 <button>Go!</button>
             </div>
         </div>
@@ -67,6 +78,8 @@
             .y(function (d) {
                 return y(d);
             });
+        
+        var dataGroup = d3.map(data, function(d){return(d.numGen)}).keys()
 
         var svg = d3.select(".graphspace").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -159,9 +172,10 @@
                 .attr("d", function (d) { return line(d); })
                 .style("stroke", function (d, i) { return color(i); });
         }
+        //IMPORTANT!!
         else {
             svg.append("path")
-                .datum(data)
+                .datum(dataGroup)
                 .attr("class", "line")
                 .attr("fill", "none")
                 .attr("d", line)
@@ -172,13 +186,13 @@
 </script>
 
 <script>
-    var data = [], freqA, popSize, numGen, numSim;
+    var data = [], freqA, Ne, numGen, numSim;
 
     draw_line_chart([0], "Time (generations)", "Allele Frequency", [""]);
 
-    //changing and storing values, running simulation on button click
-    $("#popSize input").on("change", function () {
-        $("#popSize span").html($("#popSize input")[0].value);
+    //changing and storing values
+    $("#Ne input").on("change", function () {
+        $("#Ne span").html($("#Ne input")[0].value);
     });
     $("#numGen input").on("change", function () {
         $("#numGen span").html($("#numGen input")[0].value);
@@ -186,38 +200,41 @@
     $("#numSim input").on("change", function () {
         $("#numSim span").html($("#numSim input")[0].value);
     });
+    
+    //main graph
     $("#params button").on("click", function () {
         $("svg").hide();
-
-    freqA = $("#freqA input")[0].value;
-    popSize = $("#popSize input")[0].value;
-    numGen = $("#numGen input")[0].value;
-    numSim = $("#numSim input")[0].value;
-    data = [];
-
-    //can possibly turn block below into standalone function?
-
-    //used to loop simulations, kept max to 5 for simplicity
-    for (i = 0; i < numSim; i++) {
-        data.push([]);
-        /**
-        * using example from "Nature, in Code" and the formula:
-        * Freq (p) = p / (2 * Ne)
-        * NOTE: when numGen = 1, this loop breaks
-        **/
-        for (j = 0; j < numGen; j++) {
-            var p = 0,
-            draws = 2 * popSize;
-            for (k = 0; k < draws; k++) {
-                if (Math.random() <= freqA) {
-                    p = p + 1;
+        freqA = $("#freqA input")[0].value;
+        Ne = $("#Ne input")[0].value;
+        numGen = $("#numGen input")[0].value;
+        numSim = $("#numSim input")[0].value;
+        data = [];
+        //used to loop simulations, kept max to 5 for simplicity
+        for (i = 0; i < numSim; i++) {
+            freqA = $("#freqA input")[0].value;
+            data.push([]);
+            for (j = 0; j < numGen; j++) {
+                var p = 0;
+                for (k = 0; k < (2 * Ne); k++) {
+                    if (Math.random() <= freqA) {
+                        p++;
+                    }
                 }
+                freqA = p / (2 * Ne);
+                data[i].push(freqA); //plot points
+                
+                //console.log(freqA);
             }
-            freqA = p / draws;
-            data[i].push(freqA);
         }
-    }
         draw_line_chart(data, "Generations", "Allele Frequency", [""]);
     })
+
 </script>
+
+p = freq A <br>
+q = freq a <br>
+Ne = population <br> 
+var(p) = pq/2Ne = 1 generation of genetic drift (diploid) <br>
+Equilibrium var(p) = p0q0
+
 </html>
