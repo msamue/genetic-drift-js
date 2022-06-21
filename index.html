@@ -36,7 +36,7 @@
     </div>
 </body>
 
-<!--Main Scripts-->
+<!--Main Graphing Scripts-->
 <script>
     //draw_line_chart function used in "Nature, in Code" by Marcel Salathé, modified for this sim
     function draw_line_chart(data, x_label, y_label, legend_values, x_max, y_max_flex) {
@@ -201,7 +201,7 @@
         $("#numSim span").html($("#numSim input")[0].value);
     });
     
-    //main graph
+    //main graph functions
     $("#params button").on("click", function () {
         $("svg").hide();
         freqA = $("#freqA input")[0].value;
@@ -209,21 +209,20 @@
         numGen = $("#numGen input")[0].value;
         numSim = $("#numSim input")[0].value;
         data = [];
-        //used to loop simulations, kept max to 5 for simplicity
         for (i = 0; i < numSim; i++) {
             freqA = $("#freqA input")[0].value;
             data.push([]);
             for (j = 0; j < numGen; j++) {
                 var p = 0;
                 for (k = 0; k < (2 * Ne); k++) {
-                    if (Math.random() <= freqA) {
+                    if (Math.random() <= freqA) { //rand 0 to 1
                         p++;
                     }
                 }
-                freqA = p / (2 * Ne);
+                freqA = p / (2 * Ne); //plot next generation
                 data[i].push(freqA); //plot points
                 
-                //console.log(freqA);
+                console.log(freqA);
             }
         }
         draw_line_chart(data, "Generations", "Allele Frequency", [""]);
