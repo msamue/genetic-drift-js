@@ -1,11 +1,7 @@
-/**
-* draw_line_chart function used in "Nature, in Code" by Marcel Salathé, modified for this sim
-* Original code can be found below:
-* http://www.natureincode.com/code/various/draw_line_chart.html
-**/
+//draw_line_chart function used in "Nature, in Code" by Marcel Salathé, modified for this sim
 function draw_line_chart(data, x_label, y_label, legend_values, x_max, y_max_flex) {
     var margin = { top: 20, right: 20, bottom: 50, left: 50 },
-        width = 700 - margin.left - margin.right,
+        width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     var version = d3.scale ? 3 : 4;
@@ -42,10 +38,12 @@ function draw_line_chart(data, x_label, y_label, legend_values, x_max, y_max_fle
         .y(function (d) {
             return y(d);
         });
+    
+    var dataGroup = d3.map(data, function(d){return(d.numGen)}).keys()
 
     var svg = d3.select(".graphspace").append("svg")
-        //.attr("width", width + margin.left + margin.right)
-        //.attr("height", height + margin.top + margin.bottom)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
         .attr("viewBox", "0 0 700 400")
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -115,8 +113,8 @@ function draw_line_chart(data, x_label, y_label, legend_values, x_max, y_max_fle
 
     d3.select("body").style("font", "10px sans-serif");
     d3.selectAll(".axis line").style("stroke", "#000");
-    d3.selectAll(".y.axis path").style("display","none"); 
-    d3.selectAll(".x.axis path").style("display","none");    
+    d3.selectAll(".y.axis path").style("display", "none");
+    d3.selectAll(".x.axis path").style("display", "none");
     d3.selectAll(".legend_title")
         .style("font-size", "12px").style("fill", "#555").style("font-weight", "400");
     d3.selectAll(".legend_text")
@@ -134,13 +132,14 @@ function draw_line_chart(data, x_label, y_label, legend_values, x_max, y_max_fle
             .attr("d", function (d) { return line(d); })
             .style("stroke", function (d, i) { return color(i); });
     }
+    //IMPORTANT!!
     else {
         svg.append("path")
-            .datum(data)
+            .datum(dataGroup)
             .attr("class", "line")
             .attr("fill", "none")
             .attr("d", line)
             .style("stroke", "steelblue");
     }
     d3.selectAll(".line").style("fill", "none").style("stroke-width", "1.5px");
-    }
+}
